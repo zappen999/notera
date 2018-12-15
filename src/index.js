@@ -46,9 +46,24 @@ Notera.prototype._createLoggerAliases = function () {
   })
 }
 
-Notera.prototype.addTransport = function addTransport (callback, opts) {
+Notera.prototype.addTransport = function addTransport (callback, opts = {}) {
   this._transports.push({ callback, opts })
 }
+
+Notera.prototype.reconfigureTransport =
+  function reconfigureTransport (transportName, newOpts) {
+    const transport = this._transports
+      .find(transport => transport.opts.name === transportName)
+
+    if (!transport) {
+      throw new Error(`No transport named '${transportName}'`)
+    }
+
+    transport.opts = {
+      ...transport.opts,
+      ...newOpts
+    }
+  }
 
 Notera.prototype.removeTransport = function removeTransport (name) {
   this._transports = this._transports
@@ -72,6 +87,8 @@ Notera.prototype.log = function log (level, ...args) {
   let meta = null
   let err = null
   let metaArgCount = 0
+  const ctx = this._tmpCtx || this._opts.ctx
+  this._tmpCtx = null
 
   args.forEach(arg => {
     if (typeof arg === 'string' && msg === null) {
@@ -93,29 +110,24 @@ Notera.prototype.log = function log (level, ...args) {
 
   this._transports
     .filter(transport => {
-      // TODO: filter out the transports that should get the message
-      // return this._opts.levels[transport.level] >= this._opts.levels[level]
-      return true
+      return !transport.opts.levels ||
+        transport.opts.levels.length === 0 ||
+        transport.opts.levels.indexOf(level) !== -1
     })
     .map(transport => {
-      const res = transport.callback({
-        ctx: this._tmpCtx || this._opts.ctx,
-        level,
-        msg,
-        meta,
-        err
-      })
-
-      this._tmpCtx = null // This is not pretty
+      const entry = { ctx, level, msg, err, meta }
+      const res = transport.callback(entry)
 
       if (res instanceof Promise) {
-        res.catch(err => this._emitEvent(EVENT.ERROR, err))
+        // TODO, we should save the promise so that we can handle a graceful
+        // shutdown
+        res.catch(err => this._emitEvent(EVENT.ERROR, { err, entry, transport }))
       }
     })
 }
 
-Notera.prototype._emitEvent = function _emitEvent (event, data) {
-  this._subscribers[event].forEach(subscriber => subscriber(data))
+Notera.prototype._emitEvent = function _emitEvent (event, ...args) {
+  this._subscribers[event].forEach(subscriber => subscriber(...args))
 }
 
 Notera.prototype.on = function on (event, cb) {
