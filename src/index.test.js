@@ -30,8 +30,69 @@ describe('Transports', () => {
     expect(mockTransport.mock.calls.length).toEqual(1)
   })
 
+  test('should handle all levels if levels is not specified', () => {
+    const logger = new Notera()
+    const mockTransport = jest.fn()
+
+    logger.addTransport(mockTransport)
+
+    logger.emerg('Some message')
+    logger.alert('Some message')
+    logger.crit('Some message')
+    logger.err('Some message')
+    logger.warning('Some message')
+    logger.notice('Some message')
+    logger.info('Some message')
+    logger.debug('Some message')
+
+    expect(mockTransport.mock.calls.length).toEqual(8)
+  })
+
+  test('should handle levels that are specified in transport options', () => {
+    const logger = new Notera()
+    const mockTransport = jest.fn()
+    const mockTransportOpts = {
+      levels: ['err', 'warning']
+    }
+
+    logger.addTransport(mockTransport, mockTransportOpts)
+
+    logger.emerg('Some message')
+    logger.alert('Some message')
+    logger.crit('Some message')
+    logger.err('Some message')
+    logger.warning('Some message')
+    logger.notice('Some message')
+    logger.info('Some message')
+    logger.debug('Some message')
+
+    expect(mockTransport.mock.calls.length).toEqual(2)
+    expect(mockTransport.mock.calls[0][0].level).toEqual('err')
+    expect(mockTransport.mock.calls[1][0].level).toEqual('warning')
+  })
+
   test('should be able to reconfigure a named transport', () => {
-    // TODO: Make this when configurable levels is implemented
+    const logger = new Notera()
+    const mockTransport = jest.fn()
+    const mockTransportOpts = {
+      name: 'mockTransport',
+      levels: ['err']
+    }
+
+    logger.addTransport(mockTransport, mockTransportOpts)
+    logger.err('Some message')
+    logger.reconfigureTransport('mockTransport', { levels: ['warning'] })
+    logger.warning('Some message')
+
+    expect(mockTransport.mock.calls.length).toEqual(2)
+    expect(mockTransport.mock.calls[0][0].level).toEqual('err')
+    expect(mockTransport.mock.calls[1][0].level).toEqual('warning')
+  })
+
+  test('should throw error when re-configuring non-existing transport', () => {
+    const logger = new Notera()
+    expect(() => logger.reconfigureTransport('moon', {}))
+      .toThrow(`No transport named 'moon'`)
   })
 })
 
@@ -108,14 +169,16 @@ describe('Events', () => {
   test('should emit error event if async transport fails', done => {
     const logger = new Notera()
 
-    logger.on('error', err => {
+    logger.on('error', ({ err, transport, entry }) => {
       expect(err).toBe(mockError)
+      expect(transport.opts.name).toEqual('mockTransport')
+      expect(entry.msg).toEqual('Some message')
       done()
     })
 
     logger.addTransport(() => {
       return Promise.reject(mockError)
-    })
+    }, { name: 'mockTransport' })
 
     logger.log('debug', 'Some message')
   })
