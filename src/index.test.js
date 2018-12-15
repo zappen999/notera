@@ -5,21 +5,6 @@ const mockError = new Error('Some error')
 const mockMeta = { some: 'meta' }
 
 describe('Transports', () => {
-  test('should emit error event if async transport fails', done => {
-    const logger = new Notera()
-
-    logger.on('error', err => {
-      expect(err).toBe(mockError)
-      done()
-    })
-
-    logger.addTransport(() => {
-      return Promise.reject(mockError)
-    })
-
-    logger.log('debug', 'Some message')
-  })
-
   test('should call the transport with log information', done => {
     const logger = new Notera()
 
@@ -85,11 +70,11 @@ describe('Logging', () => {
     const logger = new Notera()
 
     logger.addTransport(({ meta }) => {
-      expect(meta).toEqual([mockMeta, true])
+      expect(meta).toEqual([mockMeta, true, false])
       done()
     })
 
-    logger.debug('Message', mockMeta, true)
+    logger.debug('Message', mockMeta, true, false)
   })
 })
 
@@ -116,5 +101,46 @@ describe('Contexts', () => {
     expect(mockTransport.mock.calls.length).toEqual(2)
     expect(mockTransport.mock.calls[0][0].ctx).toEqual('SERVER')
     expect(mockTransport.mock.calls[1][0].ctx).toEqual('API')
+  })
+})
+
+describe('Events', () => {
+  test('should emit error event if async transport fails', done => {
+    const logger = new Notera()
+
+    logger.on('error', err => {
+      expect(err).toBe(mockError)
+      done()
+    })
+
+    logger.addTransport(() => {
+      return Promise.reject(mockError)
+    })
+
+    logger.log('debug', 'Some message')
+  })
+
+  test('should be able to have two event handlers on the same event', done => {
+    const logger = new Notera()
+    const errorHandlingMock1 = jest.fn()
+    const errorHandlingMock2 = jest.fn()
+
+    logger.on('error', errorHandlingMock1)
+    logger.on('error', errorHandlingMock2)
+    logger.on('error', () => {
+      expect(errorHandlingMock1.mock.calls.length).toEqual(1)
+      expect(errorHandlingMock2.mock.calls.length).toEqual(1)
+      done()
+    })
+
+    logger.addTransport(() => Promise.reject(mockError))
+
+    logger.log('debug', 'Some message')
+  })
+
+  test('should throw error when trying to listen on unknown event', () => {
+    const logger = new Notera()
+    expect(() => logger.on('something', () => {}))
+      .toThrow(`No event named 'something'`)
   })
 })
