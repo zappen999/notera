@@ -3,7 +3,7 @@
 //
 // Support for:
 // - Transports
-// - Logging errors with stacktrace
+// - Logging errors with stacktrace - Not this package's responsibility?
 // - Errors with meta data
 // - Namespacing
 // - Different instances in same application
@@ -35,7 +35,7 @@ function Notera (opts) {
 
   this._transports = []
   this._subscribers = {}
-  this._ctx = null
+  this._tmpCtx = null
 
   this._createLoggerAliases()
 }
@@ -50,8 +50,13 @@ Notera.prototype.addTransport = function addTransport (callback, opts) {
   this._transports.push({ callback, opts })
 }
 
+Notera.prototype.removeTransport = function removeTransport (name) {
+  this._transports = this._transports
+    .filter(transport => transport.opts.name !== name)
+}
+
 Notera.prototype.ctx = function ctx (contextName) {
-  this._ctx = contextName
+  this._tmpCtx = contextName
   return this
 }
 
@@ -94,14 +99,14 @@ Notera.prototype.log = function log (level, ...args) {
     })
     .map(transport => {
       const res = transport.callback({
-        ctx: this._ctx || this._opts.ctx,
+        ctx: this._tmpCtx || this._opts.ctx,
         level,
         msg,
         meta,
         err
       })
 
-      this._ctx = null // This is not pretty
+      this._tmpCtx = null // This is not pretty
 
       if (res instanceof Promise) {
         res.catch(err => this._emitEvent(EVENT.ERROR, err))
