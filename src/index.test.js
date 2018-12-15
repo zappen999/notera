@@ -1,4 +1,4 @@
-/* global describe, test, expect */
+/* global jest, describe, test, expect */
 const Notera = require('./index')
 
 const mockError = new Error('Some error')
@@ -32,6 +32,21 @@ describe('Transports', () => {
     })
 
     logger.log('debug', 'Some message', mockMeta, mockError)
+  })
+
+  test('should be able to remove a named transport', () => {
+    const logger = new Notera()
+    const mockTransport = jest.fn()
+
+    logger.addTransport(mockTransport, { name: 'mockTransport' })
+    logger.log('debug', 'Some message')
+    logger.removeTransport('mockTransport')
+    logger.log('debug', 'Some message')
+    expect(mockTransport.mock.calls.length).toEqual(1)
+  })
+
+  test('should be able to reconfigure a named transport', () => {
+    // TODO: Make this when configurable levels is implemented
   })
 })
 
@@ -79,26 +94,27 @@ describe('Logging', () => {
 })
 
 describe('Contexts', () => {
-  test('should use global context supplied in options', done => {
+  test('should use global context supplied in options', () => {
     const logger = new Notera({ ctx: 'API' })
+    const mockTransport = jest.fn()
 
-    logger.addTransport(({ ctx }) => {
-      expect(ctx).toEqual('API')
-      done()
-    })
-
+    logger.addTransport(mockTransport)
     logger.debug('Message')
+
+    expect(mockTransport.mock.calls.length).toEqual(1)
+    expect(mockTransport.mock.calls[0][0].ctx).toEqual('API')
   })
 
-  test('should override global context with logger', done => {
+  test('should override global context with logger', () => {
     const logger = new Notera({ ctx: 'API' })
+    const mockTransport = jest.fn()
 
-    logger.addTransport(({ ctx }) => {
-      expect(ctx).toEqual('SERVER')
-      done()
-    })
-
+    logger.addTransport(mockTransport)
     logger.ctx('SERVER').debug('Message')
-    // TODO: Make sure that the second call doent have ctx
+    logger.debug('Message')
+
+    expect(mockTransport.mock.calls.length).toEqual(2)
+    expect(mockTransport.mock.calls[0][0].ctx).toEqual('SERVER')
+    expect(mockTransport.mock.calls[1][0].ctx).toEqual('API')
   })
 })
