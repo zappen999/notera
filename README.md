@@ -78,17 +78,6 @@ logger.info('Hello')
 logger.debug('Hello')
 ```
 
-**Example of classification:**
-
-```js
-const logger = new Notera()
-const error = new Error()
-
-logger.info('Hello', error)
-// ->
-
-```
-
 ### Options
 
 ```ts
