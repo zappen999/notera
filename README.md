@@ -9,9 +9,9 @@ you control the destination format using transports.
 If you expect a "batteries included" solution for your logging needs, this might
 not be for you.
 
-[
-  ![](https://img.shields.io/bitbucket/pipelines/zappen999/notera/master.svg)
-](https://bitbucket.org/zappen999/notera/addon/pipelines/home#!/results/branch/master/page/1)
+[![Build Status](https://travis-ci.org/zappen999/notera.svg?branch=master)](https://travis-ci.org/zappen999/notera)
+[![Coverage
+Status](https://coveralls.io/repos/github/zappen999/notera/badge.svg?branch=master)](https://coveralls.io/github/zappen999/notera?branch=master)
 
 ## Table of contents
 1. [Usage](#usage)
