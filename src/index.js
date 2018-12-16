@@ -1,18 +1,4 @@
-// No transport included by default //
-// Targeting ES6/Node.js 8.12 >
-//
-// Support for:
-// - Transports
-// - Logging errors with stacktrace - Not this package's responsibility?
-// - Errors with meta data
-// - Namespacing
-// - Different instances in same application
-//
-// Requirements:
-// - Changeable levels
-// - Performance
-// - Sync and async behavior of transports
-
+// TODO: Be able to add context to use for a request for example
 const LINUX_LOG_LEVELS = {
   emerg: 0,
   alert: 1,
@@ -83,17 +69,17 @@ Notera.prototype.log = function log (level, ...args) {
     )
   }
 
-  let msg = null
-  let meta = null
-  let err = null
+  let msg
+  let meta
+  let err
   let metaArgCount = 0
   const ctx = this._tmpCtx || this._opts.ctx
   this._tmpCtx = null
 
   args.forEach(arg => {
-    if (typeof arg === 'string' && msg === null) {
+    if (typeof arg === 'string' && typeof msg === 'undefined') {
       msg = arg
-    } else if (arg instanceof Error && err === null) {
+    } else if (arg instanceof Error && typeof err === 'undefined') {
       err = arg
     } else {
       if (metaArgCount === 0) {
