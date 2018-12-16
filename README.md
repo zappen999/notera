@@ -171,7 +171,8 @@ listen to events.
 - **error**: Emitted when an async transport has failed (rejected promise).
 
 ## Transport implementations
-*TBD: Link to compatible transports*
+- **[Notera Transport Terminal](https://github.com/zappen999/notera-transport-terminal)**
+  \- A customizable terminal transport for development purposes
 
 ## Installation
 - `npm install notera`
