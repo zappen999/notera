@@ -2,6 +2,7 @@
   "name": "notera",
   "version": "0.1.1",
   "description": "Logging interface with support for transports",
+  "keywords": ["logging", "error", "handling", "console"],
   "main": "src/index.js",
   "scripts": {
     "test": "npx jest",
@@ -10,6 +11,11 @@
   },
   "author": "Johan Kanefur <johan.canefur@gmail.com>",
   "license": "GPL-3.0",
+  "homepage": "https://github.com/zappen999/notera",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zappen999/notera.git"
+  },
   "devDependencies": {
     "coveralls": "^3.0.2",
     "jest": "^23.6.0",
