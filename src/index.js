@@ -101,8 +101,14 @@ Notera.prototype.log = function log (level, ...args) {
         transport.opts.levels.indexOf(level) !== -1
     })
     .map(transport => {
-      const entry = { ctx, level, msg, err, meta }
-      const res = transport.callback(entry)
+      const entry = { date: new Date(), ctx, level, msg, err, meta }
+      let res
+
+      try {
+        res = transport.callback(entry)
+      } catch (err) {
+        this._emitEvent(EVENT.ERROR, { err, entry, transport })
+      }
 
       if (res instanceof Promise) {
         // TODO, we should save the promise so that we can handle a graceful

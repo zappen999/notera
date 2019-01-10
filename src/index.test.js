@@ -183,6 +183,23 @@ describe('Events', () => {
     logger.log('debug', 'Some message')
   })
 
+  test('should emit error event if transport throws (sync)', done => {
+    const logger = new Notera()
+
+    logger.on('error', ({ err, transport, entry }) => {
+      expect(err).toBe(mockError)
+      expect(transport.opts.name).toEqual('mockTransport')
+      expect(entry.msg).toEqual('Some message')
+      done()
+    })
+
+    logger.addTransport(() => {
+      throw mockError
+    }, { name: 'mockTransport' })
+
+    logger.log('debug', 'Some message')
+  })
+
   test('should be able to have two event handlers on the same event', done => {
     const logger = new Notera()
     const errorHandlingMock1 = jest.fn()
