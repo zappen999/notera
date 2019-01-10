@@ -119,7 +119,7 @@ Notera.prototype.log = function log (level, ...args) {
 }
 
 Notera.prototype._emitEvent = function _emitEvent (event, ...args) {
-  this._subscribers[event].forEach(subscriber => subscriber(...args))
+  (this._subscribers[event] || []).forEach(subscriber => subscriber(...args))
 }
 
 Notera.prototype.on = function on (event, cb) {
