@@ -200,6 +200,16 @@ describe('Events', () => {
     logger.log('debug', 'Some message')
   })
 
+  test('should not throw when there is no error handlers attached', () => {
+    const logger = new Notera()
+
+    logger.addTransport(() => {
+      throw mockError
+    }, { name: 'mockTransport' })
+
+    logger.log('debug', 'Some message')
+  })
+
   test('should be able to have two event handlers on the same event', done => {
     const logger = new Notera()
     const errorHandlingMock1 = jest.fn()
