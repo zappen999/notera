@@ -173,6 +173,8 @@ listen to events.
 ## Transport implementations
 - **[Notera Transport Terminal](https://github.com/zappen999/notera-transport-terminal)**
   \- A customizable terminal transport for development purposes
+- **[Notera Transport Rollbar](https://github.com/zappen999/notera-transport-rollbar)**
+  \- Transport for logging to Rollbar
 
 ## Installation
 - `npm install notera`
