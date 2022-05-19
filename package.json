@@ -1,29 +1,31 @@
 {
-  "name": "notera",
-  "version": "0.2.2",
-  "description": "Logging interface with support for transports",
-  "keywords": [
-    "logging",
-    "error",
-    "handling",
-    "console"
-  ],
-  "main": "src/index.js",
-  "scripts": {
-    "test": "npx jest",
-    "test:watch": "npx jest --watchAll",
-    "generate:coverage": "npx jest --coverage --coverageReporters=text-lcov | npx coveralls && rm -rf coverage/"
-  },
-  "author": "Johan Kanefur <johan.canefur@gmail.com>",
-  "license": "GPL-3.0",
-  "homepage": "https://github.com/zappen999/notera",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/zappen999/notera.git"
-  },
-  "devDependencies": {
-    "coveralls": "^3.0.2",
-    "jest": "^23.6.0",
-    "standard": "^12.0.1"
-  }
+	"name": "notera",
+	"version": "0.2.2",
+	"description": "Logging interface with support for transports",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"files": [
+		"dist/**/*"
+	],
+	"scripts": {
+		"build": "rm -r ./dist && tsc",
+		"test": "jest",
+		"test:watch": "jest --watchAll",
+		"coverage:generate": "jest --coverage",
+		"coverage:publish": "jest --coverage --coverageReporters=text-lcov | coveralls && rm -rf coverage/"
+	},
+	"author": "Johan Kanefur <johan@kanefur.se>",
+	"license": "GPL-3.0",
+	"devDependencies": {
+		"@mobajl/eslint-config": "^1.1.2",
+		"@mobajl/prettier-config": "^1.0.1",
+		"@types/jest": "^27.5.1",
+		"coveralls": "^3.0.2",
+		"eslint": "^7",
+		"jest": "^28.1.0",
+		"prettier": "^2.6.2",
+		"standard": "^12.0.1",
+		"ts-jest": "^28.0.2",
+		"typescript": "^4.6.4"
+	}
 }

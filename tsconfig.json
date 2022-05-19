@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"module": "commonjs",
+		"declaration": true,
+		"outDir": "./dist",
+		"target": "es2019",
+		"lib": ["es2020"],
+		"importsNotUsedAsValues": "error",
+		"noUncheckedIndexedAccess": true,
+		"strict": true,
+		"noUnusedParameters": true,
+		"noUnusedLocals": true,
+		"noImplicitAny": true,
+		"typeRoots": [
+			"./node_modules/@types"
+		]
+	},
+	"include": [
+		"./src/"
+	]
+}
