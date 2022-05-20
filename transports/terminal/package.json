@@ -1,0 +1,24 @@
+{
+	"name": "@notera/terminal",
+	"version": "0.1.2",
+	"description": "Terminal transport for Notera",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"files": [
+		"dist/**/*"
+	],
+	"scripts": {
+		"build": "rm -rf ./dist && tsc",
+		"test": "jest",
+		"test:watch": "jest --watchAll",
+		"coverage:generate": "jest --coverage",
+		"coverage:publish": "jest --coverage --coverageReporters=text-lcov | coveralls && rm -rf coverage/"
+	},
+	"author": "Johan Kanefur <johan@kanefur.se",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"@notera/core": "*",
+		"@types/node": "^17.0.35",
+		"ansi-styles": "^5.2.0"
+	}
+}

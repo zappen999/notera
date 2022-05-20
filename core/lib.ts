@@ -15,7 +15,10 @@ export class Notera<LevelsT extends string> {
 
 	constructor(protected opts: Opts<LevelsT>) {}
 
-	addTransport(callback: TransportFn, opts?: TransportOpts<LevelsT>): void {
+	addTransport(
+		callback: TransportFn<LevelsT>,
+		opts?: TransportOpts<LevelsT>,
+	): void {
 		this.transports.push({ callback, opts });
 	}
 
@@ -86,7 +89,7 @@ export class Notera<LevelsT extends string> {
 
 	protected emitErrorEvent(
 		err: unknown,
-		entry: LogEntry,
+		entry: LogEntry<LevelsT>,
 		transport: Transport<LevelsT>,
 	): void {
 		this.onErrorListeners.forEach((listener) =>

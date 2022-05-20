@@ -5,37 +5,29 @@ export type Opts<LevelsT extends string> = {
 	ctx?: string;
 };
 
-export type LinuxKernelLevels =
-	| 'emerg'
-	| 'alert'
-	| 'crit'
-	| 'err'
-	| 'warning'
-	| 'notice'
-	| 'info'
-	| 'debug';
-
-export type LogEntry = {
+export type LogEntry<LevelsT extends string> = {
 	date: Date;
 	ctx?: string;
-	level: string;
+	level: LevelsT;
 	msg?: string;
 	meta: Meta[];
 };
 
-export type TransportFn = (entry: LogEntry) => void | Promise<void>;
+export type TransportFn<LevelsT extends string> = (
+	entry: LogEntry<LevelsT>,
+) => void | Promise<void>;
 export type TransportOpts<LevelsT> = {
 	name?: string;
 	levels?: LevelsT[];
 };
-export type Transport<LevelsT> = {
-	callback: TransportFn;
+export type Transport<LevelsT extends string> = {
+	callback: TransportFn<LevelsT>;
 	opts?: TransportOpts<LevelsT>;
 };
 
-export type OnErrorCallback<LevelsT> = (
+export type OnErrorCallback<LevelsT extends string> = (
 	err: unknown,
-	entry: LogEntry,
+	entry: LogEntry<LevelsT>,
 	transport: Transport<LevelsT>,
 ) => void;
 
