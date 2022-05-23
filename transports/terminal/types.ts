@@ -44,8 +44,10 @@ export type SegmentConfig<LevelsT extends string> = {
 	// Default false
 	disabled?: boolean;
 
+	// Function to format the segment
 	format?: ((entry: LogEntry<LevelsT>, opts: Opts<LevelsT>) => string) | null;
 
+	// Function to determine the style of this segment this specific log entry.
 	style?:
 		| Style
 		| ((entry: LogEntry<LevelsT>, opts: Opts<LevelsT>) => Style)
