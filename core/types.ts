@@ -33,9 +33,13 @@ export type OnErrorCallback<LevelsT extends string> = (
 
 export type Meta = unknown;
 
-export type LogFn = (msg?: string, ...meta: Meta[]) => void;
+export type LogFn = (msg?: string, ...meta: Meta[]) => Promise<unknown> | void;
 export type LoggingInterface<LevelsT extends string> = {
 	[K in LevelsT]: LogFn;
 } & {
-	log: (level: LevelsT, msg?: string, ...meta: Meta[]) => void;
+	log: (
+		level: LevelsT,
+		msg?: string,
+		...meta: Meta[]
+	) => Promise<unknown> | void;
 };

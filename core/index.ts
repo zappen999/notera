@@ -3,6 +3,7 @@ import type { Opts, LoggingInterface, Meta } from './types';
 
 export * from './utils';
 export * from './types';
+export * from './lib';
 
 export function factory<LevelsT extends string>(
 	opts: Opts<LevelsT>,

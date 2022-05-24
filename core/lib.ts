@@ -46,7 +46,11 @@ export class Notera<LevelsT extends string> {
 		return this;
 	}
 
-	log(level: LevelsT, msg?: string, ...meta: Meta[]): void {
+	log(
+		level: LevelsT,
+		msg?: string,
+		...meta: Meta[]
+	): Promise<unknown[]> | void {
 		if (!(level in this.opts.levels)) {
 			throw new TypeError(
 				`Unsupported log level '${level}'. Valid levels are: ` +
@@ -57,7 +61,7 @@ export class Notera<LevelsT extends string> {
 		const ctx = this.tmpCtx || this.opts.ctx;
 		this.tmpCtx = undefined;
 
-		this.transports
+		const results = this.transports
 			.filter((transport) => {
 				return (
 					!transport.opts?.levels ||
@@ -76,11 +80,15 @@ export class Notera<LevelsT extends string> {
 				}
 
 				if (res instanceof Promise) {
-					// TODO, we should save the promise so that we can handle a graceful
-					// shutdown
-					res.catch((err) => this.emitErrorEvent(err, entry, transport));
+					return res.catch((err) => this.emitErrorEvent(err, entry, transport));
 				}
 			});
+
+		const promises = results.filter((r) => r);
+
+		if (promises.length) {
+			return Promise.all(promises);
+		}
 	}
 
 	onError(callback: OnErrorCallback<LevelsT>): void {
@@ -95,5 +103,9 @@ export class Notera<LevelsT extends string> {
 		this.onErrorListeners.forEach((listener) =>
 			listener(err, entry, transport),
 		);
+
+		if (!this.onErrorListeners.length) {
+			throw err;
+		}
 	}
 }
