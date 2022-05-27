@@ -1,4 +1,4 @@
-import createLogger, { defaultOpts } from './index';
+import createLogger, { defaultOpts, linuxLogLevels } from './index';
 
 const mockMeta = { some: 'meta' };
 const mockError = new Error('Some error');
@@ -95,6 +95,15 @@ describe('Logging', () => {
 
 		logger.debug('Message', mockMeta, true, false);
 	});
+
+	it('should be possible to strictly type meta data', () => {
+		const logger = createLogger<
+			keyof typeof linuxLogLevels,
+			[string, { thisMustBeNumber: number }]
+		>(defaultOpts);
+
+		logger.err('message', 'this must be a string', { thisMustBeNumber: 1 });
+	});
 });
 
 describe('Contexts', () => {
@@ -164,7 +173,7 @@ describe('Events', () => {
 		logger.log('debug', 'Some message');
 	});
 
-	it('should not throw when there is no error handlers attached', () => {
+	it('should throw when there is no error handlers attached', () => {
 		const logger = createLogger(defaultOpts);
 
 		logger.addTransport(
@@ -174,7 +183,7 @@ describe('Events', () => {
 			{ name: 'mockTransport' },
 		);
 
-		logger.log('debug', 'Some message');
+		expect(() => logger.log('debug', 'Some message')).toThrow(`Some error`);
 	});
 
 	it('should be able to have two event handlers on the same event', (done) => {

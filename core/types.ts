@@ -5,41 +5,50 @@ export type Opts<LevelsT extends string> = {
 	ctx?: string;
 };
 
-export type LogEntry<LevelsT extends string> = {
+export type DefaultMeta = unknown[];
+
+export type LogEntry<LevelsT extends string, MetaT extends DefaultMeta> = {
 	date: Date;
 	ctx?: string;
 	level: LevelsT;
 	msg?: string;
-	meta: Meta[];
+	meta: MetaT;
 };
 
-export type TransportFn<LevelsT extends string> = (
-	entry: LogEntry<LevelsT>,
+export type TransportFn<LevelsT extends string, MetaT extends DefaultMeta> = (
+	entry: LogEntry<LevelsT, MetaT>,
 ) => void | Promise<void>;
 export type TransportOpts<LevelsT> = {
 	name?: string;
 	levels?: LevelsT[];
 };
-export type Transport<LevelsT extends string> = {
-	callback: TransportFn<LevelsT>;
+export type Transport<LevelsT extends string, MetaT extends DefaultMeta> = {
+	callback: TransportFn<LevelsT, MetaT>;
 	opts?: TransportOpts<LevelsT>;
 };
 
-export type OnErrorCallback<LevelsT extends string> = (
+export type OnErrorCallback<
+	LevelsT extends string,
+	MetaT extends DefaultMeta,
+> = (
 	err: unknown,
-	entry: LogEntry<LevelsT>,
-	transport: Transport<LevelsT>,
+	entry: LogEntry<LevelsT, MetaT>,
+	transport: Transport<LevelsT, MetaT>,
 ) => void;
 
-export type Meta = unknown;
-
-export type LogFn = (msg?: string, ...meta: Meta[]) => Promise<unknown> | void;
-export type LoggingInterface<LevelsT extends string> = {
-	[K in LevelsT]: LogFn;
+export type LogFn<MetaT extends DefaultMeta> = (
+	msg?: string,
+	...meta: MetaT
+) => Promise<unknown> | void;
+export type LoggingInterface<
+	LevelsT extends string,
+	MetaT extends DefaultMeta,
+> = {
+	[K in LevelsT]: LogFn<MetaT>;
 } & {
 	log: (
 		level: LevelsT,
 		msg?: string,
-		...meta: Meta[]
+		...meta: MetaT
 	) => Promise<unknown> | void;
 };

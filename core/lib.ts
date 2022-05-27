@@ -5,18 +5,18 @@ import type {
 	OnErrorCallback,
 	Opts,
 	LogEntry,
-	Meta,
+	DefaultMeta,
 } from './types';
 
-export class Notera<LevelsT extends string> {
-	protected onErrorListeners: OnErrorCallback<LevelsT>[] = [];
-	protected transports: Transport<LevelsT>[] = [];
+export class Notera<LevelsT extends string, MetaT extends DefaultMeta> {
+	protected onErrorListeners: OnErrorCallback<LevelsT, MetaT>[] = [];
+	protected transports: Transport<LevelsT, MetaT>[] = [];
 	protected tmpCtx: string | undefined;
 
 	constructor(protected opts: Opts<LevelsT>) {}
 
 	addTransport(
-		callback: TransportFn<LevelsT>,
+		callback: TransportFn<LevelsT, MetaT>,
 		opts?: TransportOpts<LevelsT>,
 	): void {
 		this.transports.push({ callback, opts });
@@ -46,11 +46,7 @@ export class Notera<LevelsT extends string> {
 		return this;
 	}
 
-	log(
-		level: LevelsT,
-		msg?: string,
-		...meta: Meta[]
-	): Promise<unknown[]> | void {
+	log(level: LevelsT, msg?: string, ...meta: MetaT): Promise<unknown[]> | void {
 		if (!(level in this.opts.levels)) {
 			throw new TypeError(
 				`Unsupported log level '${level}'. Valid levels are: ` +
@@ -91,14 +87,14 @@ export class Notera<LevelsT extends string> {
 		}
 	}
 
-	onError(callback: OnErrorCallback<LevelsT>): void {
+	onError(callback: OnErrorCallback<LevelsT, MetaT>): void {
 		this.onErrorListeners.push(callback);
 	}
 
 	protected emitErrorEvent(
 		err: unknown,
-		entry: LogEntry<LevelsT>,
-		transport: Transport<LevelsT>,
+		entry: LogEntry<LevelsT, MetaT>,
+		transport: Transport<LevelsT, MetaT>,
 	): void {
 		this.onErrorListeners.forEach((listener) =>
 			listener(err, entry, transport),
