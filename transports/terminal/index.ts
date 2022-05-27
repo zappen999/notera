@@ -1,13 +1,13 @@
-import type { LogEntry, TransportFn } from '@notera/core';
+import type { DefaultMeta, LogEntry, TransportFn } from '@notera/core';
 import style from 'ansi-styles';
 
 import type { Opts, ParsedOpts } from './types';
 
 const LINEBREAK_PATTERN = /\r?\n|\r/g;
 
-function getOpts<LevelsT extends string>(
-	userOpts?: Opts<LevelsT>,
-): ParsedOpts<LevelsT> {
+function getOpts<LevelsT extends string, MetaT extends DefaultMeta>(
+	userOpts?: Opts<LevelsT, MetaT>,
+): ParsedOpts<LevelsT, MetaT> {
 	return {
 		disableStyle: false,
 		singleLine: false,
@@ -48,9 +48,10 @@ function getOpts<LevelsT extends string>(
 	};
 }
 
-export default function transport<LevelsT extends string>(
-	userOpts?: Opts<LevelsT>,
-): TransportFn<LevelsT> {
+export default function transport<
+	LevelsT extends string,
+	MetaT extends DefaultMeta,
+>(userOpts?: Opts<LevelsT, MetaT>): TransportFn<LevelsT, MetaT> {
 	const opts = getOpts(userOpts);
 
 	const segmentKeys = Object.keys(opts.segment)
@@ -63,16 +64,16 @@ export default function transport<LevelsT extends string>(
 				((opts.segment as any)[b].index || 1),
 		);
 
-	return (entry: LogEntry<LevelsT>) => {
+	return (entry: LogEntry<LevelsT, MetaT>) => {
 		let line = segmentKeys
 			.filter((key) => (entry as any)[key] !== 'undefined' || 1)
 			.reduce((l, _key) => {
-				const key = _key as keyof ParsedOpts<LevelsT>['segment'];
+				const key = _key as keyof ParsedOpts<LevelsT, MetaT>['segment'];
 				const segmentConfig = opts.segment[key];
 
 				const segmentText =
 					segmentConfig.format?.(entry, opts) ||
-					entry[key as keyof LogEntry<LevelsT>];
+					entry[key as keyof LogEntry<LevelsT, MetaT>];
 
 				const styleName =
 					!opts.disableStyle && segmentConfig.style

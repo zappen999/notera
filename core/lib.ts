@@ -1,7 +1,5 @@
 import type {
 	Transport,
-	TransportFn,
-	TransportOpts,
 	OnErrorCallback,
 	Opts,
 	LogEntry,
@@ -15,29 +13,30 @@ export class Notera<LevelsT extends string, MetaT extends DefaultMeta> {
 
 	constructor(protected opts: Opts<LevelsT>) {}
 
-	addTransport(
-		callback: TransportFn<LevelsT, MetaT>,
-		opts?: TransportOpts<LevelsT>,
-	): void {
-		this.transports.push({ callback, opts });
+	addTransport(transport: Transport<LevelsT, MetaT>): void {
+		this.transports.push(transport);
 	}
 
-	reconfigureTransport(name: string, newOpts: TransportOpts<LevelsT>): void {
-		const transport = this.transports.find((t) => t.opts?.name === name);
+	reconfigureTransport(
+		name: string,
+		newConfig: Partial<Transport<LevelsT, MetaT>>,
+	): void {
+		const idx = this.transports.findIndex((t) => t.name === name);
+		const transport = this.transports[idx];
 
 		if (!transport) {
 			throw new Error(`No transport named '${name}'`);
 		}
 
-		transport.opts = {
-			...transport.opts,
-			...newOpts,
+		this.transports[idx] = {
+			...transport,
+			...newConfig,
 		};
 	}
 
 	removeTransport(name: string): void {
 		this.transports = this.transports.filter(
-			(transport) => transport.opts?.name !== name,
+			(transport) => transport.name !== name,
 		);
 	}
 
@@ -60,9 +59,9 @@ export class Notera<LevelsT extends string, MetaT extends DefaultMeta> {
 		const results = this.transports
 			.filter((transport) => {
 				return (
-					!transport.opts?.levels ||
-					transport.opts?.levels.length === 0 ||
-					transport.opts?.levels.indexOf(level) !== -1
+					!transport.levels ||
+					transport.levels.length === 0 ||
+					transport.levels.indexOf(level) !== -1
 				);
 			})
 			.map((transport) => {

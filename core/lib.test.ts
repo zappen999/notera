@@ -7,12 +7,14 @@ describe('Transports', () => {
 	it('should call the transport with log information', (done) => {
 		const logger = createLogger(defaultOpts);
 
-		logger.addTransport(({ level, msg, meta }) => {
-			expect(level).toEqual('debug');
-			expect(msg).toEqual('Some message');
-			expect(meta[0]).toEqual(mockMeta);
+		logger.addTransport({
+			callback: ({ level, msg, meta }) => {
+				expect(level).toEqual('debug');
+				expect(msg).toEqual('Some message');
+				expect(meta[0]).toEqual(mockMeta);
 
-			done();
+				done();
+			},
 		});
 
 		logger.log('debug', 'Some message', mockMeta);
@@ -22,7 +24,7 @@ describe('Transports', () => {
 		const logger = createLogger(defaultOpts);
 		const mockTransport = jest.fn();
 
-		logger.addTransport(mockTransport, { name: 'mockTransport' });
+		logger.addTransport({ name: 'mockTransport', callback: mockTransport });
 		logger.log('debug', 'Some message');
 		logger.removeTransport('mockTransport');
 		logger.log('debug', 'Some message');
@@ -33,7 +35,7 @@ describe('Transports', () => {
 		const logger = createLogger(defaultOpts);
 		const mockTransport = jest.fn();
 
-		logger.addTransport(mockTransport);
+		logger.addTransport({ callback: mockTransport });
 
 		logger.debug('Some message');
 		logger.warning('Some message');
@@ -46,7 +48,8 @@ describe('Transports', () => {
 		const logger = createLogger(defaultOpts);
 		const mockTransport = jest.fn();
 
-		logger.addTransport(mockTransport, {
+		logger.addTransport({
+			callback: mockTransport,
 			levels: ['warning', 'err'],
 		});
 
@@ -63,7 +66,8 @@ describe('Transports', () => {
 		const logger = createLogger(defaultOpts);
 		const mockTransport = jest.fn();
 
-		logger.addTransport(mockTransport, {
+		logger.addTransport({
+			callback: mockTransport,
 			name: 'mockTransport',
 			levels: ['err'],
 		});
@@ -88,9 +92,11 @@ describe('Logging', () => {
 	it('meta should be provided as array to transport', (done) => {
 		const logger = createLogger(defaultOpts);
 
-		logger.addTransport(({ meta }) => {
-			expect(meta).toEqual([mockMeta, true, false]);
-			done();
+		logger.addTransport({
+			callback: ({ meta }) => {
+				expect(meta).toEqual([mockMeta, true, false]);
+				done();
+			},
 		});
 
 		logger.debug('Message', mockMeta, true, false);
@@ -111,7 +117,7 @@ describe('Contexts', () => {
 		const logger = createLogger({ ...defaultOpts, ctx: 'API' });
 		const mockTransport = jest.fn();
 
-		logger.addTransport(mockTransport);
+		logger.addTransport({ callback: mockTransport });
 		logger.debug('Message');
 
 		expect(mockTransport.mock.calls.length).toEqual(1);
@@ -122,7 +128,7 @@ describe('Contexts', () => {
 		const logger = createLogger({ ...defaultOpts, ctx: 'API' });
 		const mockTransport = jest.fn();
 
-		logger.addTransport(mockTransport);
+		logger.addTransport({ callback: mockTransport });
 		logger.ctx('SERVER').debug('Message');
 		logger.debug('Message');
 
@@ -138,17 +144,17 @@ describe('Events', () => {
 
 		logger.onError((err, entry, transport) => {
 			expect(err).toBe(mockError);
-			expect(transport.opts?.name).toEqual('mockTransport');
+			expect(transport.name).toEqual('mockTransport');
 			expect(entry.msg).toEqual('Some message');
 			done();
 		});
 
-		logger.addTransport(
-			() => {
+		logger.addTransport({
+			callback: () => {
 				return Promise.reject(mockError);
 			},
-			{ name: 'mockTransport' },
-		);
+			name: 'mockTransport',
+		});
 
 		logger.log('debug', 'Some message');
 	});
@@ -158,17 +164,17 @@ describe('Events', () => {
 
 		logger.onError((err, entry, transport) => {
 			expect(err).toBe(mockError);
-			expect(transport.opts?.name).toEqual('mockTransport');
+			expect(transport.name).toEqual('mockTransport');
 			expect(entry.msg).toEqual('Some message');
 			done();
 		});
 
-		logger.addTransport(
-			() => {
+		logger.addTransport({
+			callback: () => {
 				throw mockError;
 			},
-			{ name: 'mockTransport' },
-		);
+			name: 'mockTransport',
+		});
 
 		logger.log('debug', 'Some message');
 	});
@@ -176,12 +182,12 @@ describe('Events', () => {
 	it('should throw when there is no error handlers attached', () => {
 		const logger = createLogger(defaultOpts);
 
-		logger.addTransport(
-			() => {
+		logger.addTransport({
+			callback: () => {
 				throw mockError;
 			},
-			{ name: 'mockTransport' },
-		);
+			name: 'mockTransport',
+		});
 
 		expect(() => logger.log('debug', 'Some message')).toThrow(`Some error`);
 	});
@@ -199,7 +205,7 @@ describe('Events', () => {
 			done();
 		});
 
-		logger.addTransport(() => Promise.reject(mockError));
+		logger.addTransport({ callback: () => Promise.reject(mockError) });
 
 		logger.log('debug', 'Some message');
 	});

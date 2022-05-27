@@ -18,13 +18,11 @@ export type LogEntry<LevelsT extends string, MetaT extends DefaultMeta> = {
 export type TransportFn<LevelsT extends string, MetaT extends DefaultMeta> = (
 	entry: LogEntry<LevelsT, MetaT>,
 ) => void | Promise<void>;
-export type TransportOpts<LevelsT> = {
-	name?: string;
-	levels?: LevelsT[];
-};
+
 export type Transport<LevelsT extends string, MetaT extends DefaultMeta> = {
 	callback: TransportFn<LevelsT, MetaT>;
-	opts?: TransportOpts<LevelsT>;
+	name?: string;
+	levels?: LevelsT[];
 };
 
 export type OnErrorCallback<

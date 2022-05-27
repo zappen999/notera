@@ -1,4 +1,4 @@
-import type { LogEntry } from '@notera/core';
+import type { LogEntry, DefaultMeta } from '@notera/core';
 import style from 'ansi-styles';
 
 import terminalTransport from './index';
@@ -8,7 +8,7 @@ const STYLE_RESET_CTRL_CHAR = '\u001b';
 
 type Levels = 'info' | 'warn';
 
-const mockEntry: LogEntry<Levels> = {
+const mockEntry: LogEntry<Levels, DefaultMeta> = {
 	date: new Date(),
 	ctx: 'SERVER',
 	level: 'info',
@@ -58,7 +58,7 @@ describe('Options', () => {
 	});
 
 	test('should change colors', () => {
-		const opts: Opts<Levels> = {
+		const opts: Opts<Levels, DefaultMeta> = {
 			stream,
 			colors: {
 				info: 'blue',
@@ -90,7 +90,7 @@ describe('Options', () => {
 
 describe('Formatting', () => {
 	test('should use the raw value if no formatter is present', () => {
-		const opts: Opts<Levels> = {
+		const opts: Opts<Levels, DefaultMeta> = {
 			stream,
 			segment: {
 				ctx: { format: null },
@@ -115,7 +115,7 @@ describe('Formatting', () => {
 	});
 
 	test('should be able to remove default entry formatters', () => {
-		const opts: Opts<Levels> = {
+		const opts: Opts<Levels, DefaultMeta> = {
 			stream,
 			disableStyle: true,
 			segment: {
@@ -128,7 +128,7 @@ describe('Formatting', () => {
 	});
 
 	test('should provide entry and options object', (done) => {
-		const opts: Opts<Levels> = {
+		const opts: Opts<Levels, DefaultMeta> = {
 			stream,
 			disableStyle: true,
 			segment: {
@@ -149,7 +149,7 @@ describe('Formatting', () => {
 
 describe('Styling', () => {
 	test('should be able to set style dynamically with function', () => {
-		const opts: Opts<Levels> = {
+		const opts: Opts<Levels, DefaultMeta> = {
 			stream,
 			segment: {
 				ctx: {
@@ -164,7 +164,7 @@ describe('Styling', () => {
 	});
 
 	test('should be able to define segment color with color name', () => {
-		const opts: Opts<Levels> = {
+		const opts: Opts<Levels, DefaultMeta> = {
 			stream,
 			segment: {
 				ctx: {

@@ -100,7 +100,7 @@ function consoleTransport({ ctx, level, msg, meta }): void {
     console.log(`${Date.now()} ${level}: ${msg}`, err, meta)
 }
 
-logger.addTransport(consoleTransport);
+logger.addTransport({ callback: consoleTransport });
 ```
 
 #### Asynchronous transport example
@@ -114,7 +114,7 @@ async function fileTransport({ ctx, level, msg, meta }): Promise<void> {
     await fs.appendFile('application.log', line)
 }
 
-logger.addTransport(fileTransport);
+logger.addTransport({ callback: fileTransport });
 
 // We should listen to errors if the transport fails
 logger.onError((err, entry, transport) => {
@@ -129,7 +129,9 @@ logger.onError((err, entry, transport) => {
 Transports can be configured to act in different ways.
 
 ```ts
-interface TransportOpts {
+interface Transport {
+    callback: (entry: LogEntry<LevelsT, MetaT>) => Promise<void> | void;
+
     // Name of the transport, to be able to reference it later on
     name?: string;
 
