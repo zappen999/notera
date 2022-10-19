@@ -178,3 +178,25 @@ describe('Styling', () => {
 		expect(stream.read().includes(expectedString)).toEqual(true);
 	});
 });
+
+describe('Edge cases', () => {
+	it('should handle circular references as meta', () => {
+		const opts: Opts<Levels, DefaultMeta> = {
+			stream,
+		};
+
+		const c1 = { value: 1 };
+		const c2 = { c1, value: 2 };
+		(c1 as any).c2 = c2;
+
+		const entry: LogEntry<Levels, DefaultMeta> = {
+			date: new Date(),
+			ctx: 'SERVER',
+			level: 'info',
+			msg: 'Some stuff\n happened',
+			meta: [c1],
+		};
+
+		expect(() => terminalTransport(opts)(entry)).not.toThrow();
+	});
+});

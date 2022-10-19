@@ -1,5 +1,6 @@
 import type { DefaultMeta, LogEntry, TransportFn } from '@notera/core';
 import style from 'ansi-styles';
+import stringify from 'json-stringify-safe';
 
 import type { Opts, ParsedOpts } from './types';
 
@@ -40,7 +41,7 @@ function getOpts<LevelsT extends string, MetaT extends DefaultMeta>(
 			meta: {
 				index: 60,
 				format: ({ meta }, opts) =>
-					` | ${JSON.stringify(meta, null, opts.singleLine ? undefined : 2)}`,
+					` | ${stringify(meta, null, opts.singleLine ? undefined : 2)}`,
 				style: 'gray',
 				...userOpts?.segment?.meta,
 			},
