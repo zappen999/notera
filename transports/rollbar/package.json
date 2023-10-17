@@ -1,0 +1,30 @@
+{
+	"name": "@notera/rollbar",
+	"version": "0.1.0",
+	"description": "Rollbar transport for Notera",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"files": [
+		"dist/**/*"
+	],
+	"scripts": {
+		"build": "rm -rf ./dist && ../../node_modules/.bin/tsc",
+		"test": "../../node_modules/.bin/jest",
+		"test:watch": "../../node_modules/.bin/jest --watchAll",
+		"coverage:generate": "../../node_modules/.bin/jest --coverage",
+		"coverage:publish": "../../node_modules/.bin/jest --coverage --coverageReporters=text-lcov | coveralls && rm -rf coverage/"
+	},
+	"author": "Johan Kanefur <johan@kanefur.se",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"@notera/core": "*",
+		"@types/node": "^17.0.35",
+		"ansi-styles": "^5.2.0"
+	},
+	"peerDependencies": {
+		"rollbar": "2.x"
+	},
+	"devDependencies": {
+		"rollbar": "^2.25.0"
+	}
+}

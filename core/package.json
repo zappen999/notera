@@ -1,0 +1,19 @@
+{
+	"name": "@notera/core",
+	"version": "0.2.2",
+	"description": "Logging interface with support for transports",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"files": [
+		"dist/**/*"
+	],
+	"scripts": {
+		"build": "rm -rf ./dist && ../node_modules/.bin/tsc",
+		"test": "../node_modules/.bin/jest",
+		"test:watch": "../node_modules/.bin/jest --watchAll",
+		"coverage:generate": "../node_modules/.bin/jest --coverage",
+		"coverage:publish": "../node_modules/.bin/jest --coverage --coverageReporters=text-lcov | coveralls && rm -rf coverage/"
+	},
+	"author": "Johan Kanefur <johan@kanefur.se>",
+	"license": "GPL-3.0"
+}
