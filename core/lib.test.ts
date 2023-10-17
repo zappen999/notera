@@ -44,6 +44,19 @@ describe('Transports', () => {
 		expect(mockTransport.mock.calls.length).toEqual(3);
 	});
 
+	it('should not handle any levels if levels is empty array', () => {
+		const logger = createLogger(defaultOpts);
+		const mockTransport = jest.fn();
+
+		logger.addTransport({ callback: mockTransport, levels: [] });
+
+		logger.debug('Some message');
+		logger.warning('Some message');
+		logger.err('Some message');
+
+		expect(mockTransport.mock.calls.length).toEqual(0);
+	});
+
 	it('should handle levels that are specified in transport options', () => {
 		const logger = createLogger(defaultOpts);
 		const mockTransport = jest.fn();

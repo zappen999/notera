@@ -60,7 +60,6 @@ export class Notera<LevelsT extends string, MetaT extends DefaultMeta> {
 			.filter((transport) => {
 				return (
 					!transport.levels ||
-					transport.levels.length === 0 ||
 					transport.levels.indexOf(level) !== -1
 				);
 			})
