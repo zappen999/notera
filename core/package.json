@@ -8,11 +8,11 @@
 		"dist/**/*"
 	],
 	"scripts": {
-		"build": "rm -rf ./dist && tsc",
-		"test": "jest",
-		"test:watch": "jest --watchAll",
-		"coverage:generate": "jest --coverage",
-		"coverage:publish": "jest --coverage --coverageReporters=text-lcov | coveralls && rm -rf coverage/"
+		"build": "rm -rf ./dist && ../node_modules/.bin/tsc",
+		"test": "../node_modules/.bin/jest",
+		"test:watch": "../node_modules/.bin/jest --watchAll",
+		"coverage:generate": "../node_modules/.bin/jest --coverage",
+		"coverage:publish": "../node_modules/.bin/jest --coverage --coverageReporters=text-lcov | coveralls && rm -rf coverage/"
 	},
 	"author": "Johan Kanefur <johan@kanefur.se>",
 	"license": "GPL-3.0"
