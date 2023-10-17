@@ -11,6 +11,9 @@ const mockEntry = {
 			some: 'meta',
 			data: true,
 		},
+		{
+			another: 'something',
+		},
 	],
 	date: new Date(),
 };
@@ -46,6 +49,7 @@ describe('Logging', () => {
 		expect((rollbar.info as any).mock.calls.length).toEqual(1);
 		const firstCall = (rollbar.info as any).mock.calls[0];
 		expect(firstCall[0]).toEqual('SERVER: Some stuff\n happened');
-		expect(firstCall[1]).toEqual(mockEntry.meta);
+		expect(firstCall[1]).toEqual(mockEntry.meta[0]);
+		expect(firstCall[2]).toEqual(mockEntry.meta[1]);
 	});
 });
