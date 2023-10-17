@@ -151,7 +151,7 @@ events.
   (rejected promise).
 
 ## Transport implementations
-- **[Terminal Transport](../transports/terminal/)**
+- **[Terminal Transport](transports/terminal)**
   \- A customizable terminal transport for development purposes
-- **[Rollbar Transport](../transports/rollbar/)**
+- **[Rollbar Transport](transports/rollbar)**
   \- Transport for logging to Rollbar
